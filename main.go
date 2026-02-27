@@ -26,25 +26,6 @@ type ParcelService struct {
 	store ParcelStore
 }
 
-func initDB(db *sql.DB) error {
-	// Создаем таблицу parcel, если её нет
-	createTableSQL := `
-    CREATE TABLE IF NOT EXISTS parcel (
-        number INTEGER PRIMARY KEY AUTOINCREMENT,
-        client INTEGER NOT NULL,
-        status TEXT NOT NULL,
-        address TEXT NOT NULL,
-        created_at TEXT NOT NULL
-    );`
-
-	_, err := db.Exec(createTableSQL)
-	if err != nil {
-		return fmt.Errorf("error creating table: %w", err)
-	}
-
-	return nil
-}
-
 func NewParcelService(store ParcelStore) ParcelService {
 	return ParcelService{store: store}
 }
@@ -122,12 +103,6 @@ func main() {
 		return
 	}
 	defer db.Close()
-
-	// Инициализируем БД
-	if err := initDB(db); err != nil {
-		fmt.Println(err)
-		return
-	}
 
 	store := NewParcelStore(db)
 	service := NewParcelService(store)
